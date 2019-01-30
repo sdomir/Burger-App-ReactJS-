@@ -11,6 +11,7 @@ const controls = [
 const BuildControls = (props) => {
     return (
         <div className={classes.BuildControls}>
+            <p>Burger Price: <strong>{props.price.toFixed(2)}</strong></p>
             {
                 controls.map(ig => {
                     return <BuildControl addClick={props.addItem}
@@ -22,6 +23,9 @@ const BuildControls = (props) => {
                                           toDisable={props.disableInfo}/>
                 })
             }
+            <button className={classes.OrderButton}
+                    disabled={!props.orderButtonState}
+                    onClick={props.orderClick}>ORDER NOW</button>
         </div>
     );
 };
