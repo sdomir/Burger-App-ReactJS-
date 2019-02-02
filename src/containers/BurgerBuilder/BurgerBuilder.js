@@ -3,7 +3,8 @@ import {Aux} from "../../HOC/Aux";
 import Burger from '../../components/Burger/Burger';
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import OrderSummary from "../../components/Burger/OrderSummary";
-
+import axios from '../../axios-order';
+import Spinner from '../../components/UI/Spinner/Spinner';
 const price = {
     Salad:0.2,
     Bacon:1.5,
@@ -21,7 +22,8 @@ class BurgerBuilder extends Component {
         },
         totalPrice: 2,
         purchasable: false,
-        summary: false
+        summary: false,
+        loading: false
     }
 
     purchasebleState(updatedIngredients) {
@@ -63,15 +65,46 @@ class BurgerBuilder extends Component {
         this.setState({summary:true})
     }
 
+    removeSummary = () => {
+        this.setState({summary:false})
+    }
+
+    purchaseContinueHandler = () => {
+        //alert('Continue');
+        this.setState({loading:true});
+        const order = {
+            ingredients: this.state.ingredients,
+            price: this.state.totalPrice,
+            customer: {
+                name: 'Dayum',
+                Address: '506 Finacial District',
+                City: 'San Francisco'
+            }
+        }
+        axios.post('/orders.json',order).then(response => {
+            this.setState({loading: false, summary: false});
+                })
+                .catch(error => {
+                    this.setState({loading:false, summary: false});
+                });
+    }
+
     render() {
         const disabled = {...this.state.ingredients};
         for(let key in disabled){
             disabled[key]=disabled[key] <= 0;
         };
+        let orderSummary = <OrderSummary ingredients = {this.state.ingredients}
+                                         show={this.state.summary}
+                                         remove={this.removeSummary}
+                                         continue={this.purchaseContinueHandler}
+                                         price={this.state.totalPrice}/>;
+        if(this.state.loading){
+            orderSummary = <Spinner />
+        }
         return (
           <Aux>
-              <OrderSummary ingredients = {this.state.ingredients}
-                            show={this.state.summary}/>
+              {orderSummary}
               <Burger ingredients = {this.state.ingredients}/>
               <BuildControls ingredients = {this.state.ingredients}
                              addItem={this.addIngredientHandler}

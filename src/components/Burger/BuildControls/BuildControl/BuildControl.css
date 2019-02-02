@@ -35,7 +35,7 @@
     width: 80px;
 }
 
-.Quant {
+.BuildControl .Quant {
     display: block;
     font: inherit;
     padding: 5px;
@@ -66,3 +66,4 @@
     background-color: #99703F;
     color: white;
 }
+
