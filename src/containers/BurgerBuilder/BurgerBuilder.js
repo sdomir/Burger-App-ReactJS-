@@ -3,7 +3,6 @@ import {Aux} from "../../HOC/Aux";
 import Burger from '../../components/Burger/Burger';
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import OrderSummary from "../../components/Burger/OrderSummary";
-import axios from '../../axios-order';
 import Spinner from '../../components/UI/Spinner/Spinner';
 const price = {
     Salad:0.2,
@@ -24,7 +23,7 @@ class BurgerBuilder extends Component {
         purchasable: false,
         summary: false,
         loading: false
-    }
+    };
 
     purchasebleState(updatedIngredients) {
         let sum = 0;
@@ -70,23 +69,14 @@ class BurgerBuilder extends Component {
     }
 
     purchaseContinueHandler = () => {
-        //alert('Continue');
-        this.setState({loading:true});
-        const order = {
-            ingredients: this.state.ingredients,
-            price: this.state.totalPrice,
-            customer: {
-                name: 'Dayum',
-                Address: '506 Finacial District',
-                City: 'San Francisco'
-            }
+        const ingredient = [];
+        for(let key in this.state.ingredients){
+            ingredient.push(encodeURIComponent(key)+ "=" + encodeURIComponent(this.state.ingredients[key]))
         }
-        axios.post('/orders.json',order).then(response => {
-            this.setState({loading: false, summary: false});
-                })
-                .catch(error => {
-                    this.setState({loading:false, summary: false});
-                });
+        ingredient.push("price=" + this.state.totalPrice);
+        const query = ingredient.join('&');
+        this.props.history.push({pathname: '/summary',
+                                    search: '?'+query});
     }
 
     render() {
