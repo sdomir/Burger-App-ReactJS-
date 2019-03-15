@@ -8,8 +8,8 @@ const NavigationItems = (props) => {
         navstyle= classes.List;
     return (
         <ul className={navstyle}>
-            <NavigationItem link="/" active="true">Burger Builder</NavigationItem>
-            <NavigationItem link="/">Checkout</NavigationItem>
+            <NavigationItem link="/">Burger Builder</NavigationItem>
+            <NavigationItem link="/orders">Orders</NavigationItem>
         </ul>
     );
 }
