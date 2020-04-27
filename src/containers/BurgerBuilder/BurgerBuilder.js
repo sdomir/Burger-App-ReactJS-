@@ -1,12 +1,11 @@
 import React, {Component} from 'react';
 import {connect} from 'react-redux';
-import axios from 'axios';
 import {Aux} from "../../HOC/Aux";
 import Burger from '../../components/Burger/Burger';
 import BuildControls from "../../components/Burger/BuildControls/BuildControls";
 import OrderSummary from "../../components/Burger/OrderSummary";
 import Spinner from '../../components/UI/Spinner/Spinner';
-import * as actionType from '../../store/actions';
+import * as burgerBuilderActions from '../../store/actions/burgerBuilder';
 
 class BurgerBuilder extends Component {
 
@@ -16,10 +15,7 @@ class BurgerBuilder extends Component {
     };
 
     componentDidMount() {
-        /*axios.get('https://my-burger-66d54.firebaseio.com/ingredients.json')
-            .then(response => {
-                this.setState({ingredients:response.data});
-            })*/
+        this.props.onInitIngredients();
     }
 
     purchasebleState() {
@@ -50,7 +46,7 @@ class BurgerBuilder extends Component {
             disabled[key]=disabled[key] <= 0;
         };
         let orderSummary = null;
-        let burger = <Spinner/>;
+        let burger = this.props.error?<p>Ingredients can't be loaded</p>:<Spinner/>;
         if(this.props.ingrd){
             burger = (
               <Aux>
@@ -83,15 +79,17 @@ class BurgerBuilder extends Component {
 }
 const mapStateToProps = state => {
     return {
-        ingrd: state.ingredients,
-        price: state.totalPrice
+        ingrd: state.burgerBuilder.ingredients,
+        price: state.burgerBuilder.totalPrice,
+        error: state.burgerBuilder.error
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        onIngredientsAdd: (igrName) => dispatch({type: actionType.ADD_INGREDIENT, ingrName:igrName}),
-        onIngredientsRemove: (igrName) => dispatch({type: actionType.REMOVE_INGREDIENT, ingrName:igrName})
+        onIngredientsAdd: (igrName) => dispatch(burgerBuilderActions.addIngredient(igrName)),
+        onIngredientsRemove: (igrName) => dispatch(burgerBuilderActions.removeIngredient(igrName)),
+        onInitIngredients: () => dispatch(burgerBuilderActions.initIngredients())
     }
 }
 

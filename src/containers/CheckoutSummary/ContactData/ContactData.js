@@ -1,7 +1,7 @@
 import React,{Component} from 'react';
 import Button from '../../../components/UI/Button/Button';
 import classes from './ContactData.css';
-import axios from '../../../axios-order';
+import * as OrderBuilderActions from '../../../store/actions/order';
 import {connect} from 'react-redux'
 import {Aux} from '../../../HOC/Aux';
 import Spinner from "../../../components/UI/Spinner/Spinner";
@@ -62,13 +62,11 @@ class ContactData extends Component {
                 valid: true
             },
         },
-        loading: false,
         formIsValid: false
     };
 
     placeOrderHandler = (event) => {
         event.preventDefault();
-        this.setState({loading:true});
        const customerDetails = {};
        for(let key in this.state.orderForm){
            customerDetails[key]=this.state.orderForm[key].value;
@@ -78,13 +76,7 @@ class ContactData extends Component {
            price: this.props.price,
            customer: customerDetails
         };
-       axios.post('/orders.json',order).then(response => {
-           this.setState({loading: false});
-           this.props.history.push('/');
-               })
-               .catch(error => {
-                   this.setState({loading:false});
-               });
+       this.props.onOrder(order);
     }
 
     isValid(value){
@@ -129,7 +121,7 @@ class ContactData extends Component {
                             </form>
                           </Aux>
                             );
-        if(this.state.loading)
+        if(this.props.loading)
             replacer = <Spinner/>
 
         return (
@@ -142,9 +134,16 @@ class ContactData extends Component {
 
 const mapStateToProps = state => {
     return {
-        ingr:state.ingredients,
-        price:state.totalPrice
+        ingr:state.burgerBuilder.ingredients,
+        price:state.burgerBuilder.totalPrice,
+        loading: state.order.loading
+    }
+};
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onOrder: orderData => dispatch(OrderBuilderActions.purchaseOrder(orderData))
     }
 }
 
-export default connect(mapStateToProps,null)(ContactData);
+export default connect(mapStateToProps,mapDispatchToProps)(ContactData);
